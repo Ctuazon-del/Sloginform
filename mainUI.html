@@ -1,1 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ritman College Institute - Student Dashboard</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <style>
+    :root {
+      --header-green: #1f7f43;
+      --header-deep: #167136;
+      --accent-gold: #c8ad4f;
+      --page-tint: rgba(236, 231, 205, 0.42);
+      --panel: rgba(255, 252, 245, 0.94);
+      --panel-border: rgba(123, 104, 36, 0.22);
+      --ink: #203224;
+      --muted: #536458;
+      --danger: #bd1f1f;
+      --danger-soft: #ffe1df;
+      --link: #1d4ed8;
+      --shadow: 0 18px 40px rgba(32, 35, 20, 0.16);
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(var(--page-tint), rgba(143, 117, 24, 0.34)),
+        url("bg.png") center/cover no-repeat fixed;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 75% 36%, rgba(200, 173, 79, 0.12), transparent 34%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(133, 111, 34, 0.14) 44%, rgba(95, 75, 13, 0.52) 100%);
+    }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 118px;
+      padding: 10px 24px;
+      background:
+        linear-gradient(180deg, rgba(42, 145, 79, 0.98), rgba(22, 113, 54, 0.96)),
+        var(--header-green);
+      border-bottom: 7px solid #9bca72;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    .brand-logo {
+      width: 152px;
+      height: 152px;
+      object-fit: cover;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(42, 145, 79, 0.98), rgba(22, 113, 54, 0.96));
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      margin: 0;
+      font-size: clamp(2rem, 4.2vw, 3.8rem);
+      line-height: 0.9;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-subtitle {
+      margin: 6px 0 0;
+      font-size: clamp(0.72rem, 0.95vw, 0.94rem);
+      letter-spacing: 0.04em;
+      color: #f5fff7;
+      font-weight: 700;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 14px;
+      background: rgba(20, 92, 47, 0.96);
+      border-bottom: 4px solid rgba(200, 173, 79, 0.88);
+      box-shadow: 0 10px 20px rgba(10, 34, 18, 0.18);
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 9px 14px;
+      font-size: 0.95rem;
+      border-radius: 999px;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      background: rgba(200, 173, 79, 0.26);
+      transform: translateY(-1px);
+    }
+
+    .main {
+      width: min(100%, 1240px);
+      margin: 0 auto;
+      padding: 26px 18px 38px;
+    }
+
+    .welcome-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 0 2px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+      margin-bottom: 24px;
+      color: #27382b;
+      font-weight: 700;
+    }
+
+    .logout {
+      color: #143d22;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .dashboard-card {
+      position: relative;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+      padding: 30px;
+    }
+
+    .dashboard-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -16% auto;
+      width: min(48vw, 520px);
+      aspect-ratio: 1 / 1;
+      background: url("logo.png") center/contain no-repeat;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .student-panel {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.4fr 0.8fr;
+      gap: 22px 34px;
+      padding: 24px 26px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(130, 116, 74, 0.16);
+      border-radius: 14px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    .data-group {
+      display: grid;
+      gap: 14px;
+    }
+
+    .data-row {
+      display: grid;
+      grid-template-columns: 160px 18px 1fr;
+      gap: 12px;
+      align-items: start;
+      font-size: 0.98rem;
+    }
+
+    .data-row strong {
+      color: #173622;
+    }
+
+    .report-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 24px 10px 10px;
+      color: var(--link);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .alert-box {
+      position: relative;
+      z-index: 1;
+      margin-top: 24px;
+      padding: 24px 26px;
+      border-radius: 16px;
+      background: rgba(255, 247, 245, 0.84);
+      border: 1px solid rgba(189, 31, 31, 0.16);
+    }
+
+    .alert-box p {
+      margin: 0 0 10px;
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      line-height: 1.35;
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    .balance-list {
+      margin: 14px 0 0 28px;
+      padding: 0;
+    }
+
+    .balance-list li {
+      color: #1f45d7;
+      font-size: clamp(1rem, 1.8vw, 1.25rem);
+      line-height: 1.4;
+    }
+
+    .footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 12px 18px 22px;
+      color: rgba(255, 255, 255, 0.86);
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 920px) {
+      .brand-logo {
+        width: 112px;
+        height: 112px;
+      }
+
+      .student-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        min-height: auto;
+        padding: 12px 16px;
+      }
+
+      .brand-logo {
+        width: 88px;
+        height: 88px;
+      }
+
+      .nav {
+        gap: 6px;
+        padding: 10px;
+      }
+
+      .nav a {
+        padding: 8px 11px;
+        font-size: 0.86rem;
+      }
+
+      .main {
+        padding: 18px 12px 30px;
+      }
+
+      .dashboard-card {
+        padding: 18px;
+      }
+
+      .student-panel {
+        padding: 18px;
+      }
+
+      .data-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .data-row .colon {
+        display: none;
+      }
+
+      .welcome-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <img class="brand-logo" src="logo.png" alt="Ritman College Institute logo">
+      <div>
+        <h1 class="brand-name">RCI</h1>
+        <p class="brand-subtitle">RITMAN COLLEGE INSTITUTE</p>
+      </div>
+    </header>
+
+    <nav class="nav" aria-label="Student menu">
+      <a href="#" class="active">Message</a>
+      <a href="#">Section Offering</a>
+      <a href="#">Profile</a>
+      <a href="#">Enrollment</a>
+      <a href="#">Schedule</a>
+      <a href="#">Grades</a>
+      <a href="#">Account</a>
+      <a href="#">Calendar</a>
+      <a href="#">Password</a>
+      <a href="#">Faculty Evaluation</a>
+    </nav>
+
+    <main class="main">
+      <div class="welcome-row">
+        <div id="welcomeText">Welcome, STUDENT (user01)</div>
+        <a class="logout" href="index.html">Logout</a>
+      </div>
+
+      <section class="dashboard-card">
+        <div class="student-panel">
+          <div class="data-group">
+            <div class="data-row">
+              <strong>Student Name</strong>
+              <span class="colon">:</span>
+              <span id="studentName">TUAZON, CHRISTIAN VILLARUZ</span>
+            </div>
+            <div class="data-row">
+              <strong>Program</strong>
+              <span class="colon">:</span>
+              <span>Bachelor of Industrial Technology Major in Computer Technology</span>
+            </div>
+            <div class="data-row">
+              <strong>School Year</strong>
+              <span class="colon">:</span>
+              <span>2025-2026</span>
+            </div>
+            <div class="data-row">
+              <strong>Status</strong>
+              <span class="colon">:</span>
+              <span>OLD (Regular) (25 Unit(s) Allowed)</span>
+            </div>
+          </div>
+
+          <div class="data-group">
+            <div class="data-row">
+              <strong>Student No.</strong>
+              <span class="colon">:</span>
+              <span id="studentNo">2418-01124M</span>
+            </div>
+            <div class="data-row">
+              <strong>Year Level</strong>
+              <span class="colon">:</span>
+              <span>Second Year</span>
+            </div>
+            <div class="data-row">
+              <strong>Semester</strong>
+              <span class="colon">:</span>
+              <span>Second</span>
+            </div>
+            <div class="data-row">
+              <strong>Section</strong>
+              <span class="colon">:</span>
+              <span>CT2A</span>
+            </div>
+          </div>
+        </div>
+
+        <a class="report-link" href="#">🖨 Certificate of Registration - Student's Copy</a>
+
+        <div class="alert-box">
+          <p>You currently have deficiency/ies. Registration has been denied.</p>
+          <p>Please settle your deficiency/ies before you can register again!</p>
+          <p>For students with Failure and No Grades yet, proceed to the Registrar's Office for Academic Status Update</p>
+
+          <ul class="balance-list">
+            <li>TUITION BALANCE (First Sem - 2025-2026) : 4,140.00</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">Created by Christian V. Tuazon</footer>
+  </div>
+
+  <script>
+    const savedStudent = JSON.parse(localStorage.getItem("rciStudentLogin") || "{}");
+    const welcomeText = document.querySelector("#welcomeText");
+    const studentName = document.querySelector("#studentName");
+    const studentNo = document.querySelector("#studentNo");
+
+    if (savedStudent.username) {
+      welcomeText.textContent = `Welcome, ${savedStudent.fullName || "STUDENT"} (${savedStudent.username})`;
+      studentNo.textContent = savedStudent.username;
+    }
+
+    if (savedStudent.fullName) {
+      studentName.textContent = savedStudent.fullName;
+    }
+  </script>
+</body>
+</html>
