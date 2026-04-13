@@ -1,16 +1,512 @@
-<html>
-<head><title>Ritman College Institute</title></head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ritman College Institute - Student Portal</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <style>
+    :root {
+      --theme-green: #8f7518;
+      --theme-deep-green: #5f4b0d;
+      --theme-gold: #c8ad4f;
+      --card-bg: rgba(38, 14, 16, 0.72);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #fff8f0;
+      --muted: rgba(255, 248, 240, 0.82);
+      --input-text: #1d1d1d;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(236, 231, 205, 0.42), rgba(143, 117, 24, 0.34)),
+        url("bg.png") center/cover no-repeat fixed;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 78% 48%, rgba(200, 173, 79, 0.16), transparent 32%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(133, 111, 34, 0.18) 46%, rgba(95, 75, 13, 0.56) 100%);
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 118px;
+      padding: 10px 24px;
+      background:
+        linear-gradient(180deg, rgba(42, 145, 79, 0.98), rgba(22, 113, 54, 0.96)),
+        #1f7f43;
+      border-bottom: 7px solid #9bca72;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    .brand-logo {
+      width: 152px;
+      height: 152px;
+      object-fit: cover;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(42, 145, 79, 0.98), rgba(22, 113, 54, 0.96));
+      padding: 4px;
+      border: none;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+      flex-shrink: 0;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-name {
+      margin: 0;
+      font-size: clamp(1.8rem, 4.2vw, 3.8rem);
+      line-height: 0.9;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-subtitle {
+      margin: 6px 0 0;
+      font-size: clamp(0.68rem, 0.95vw, 0.92rem);
+      letter-spacing: 0.04em;
+      color: #f5fff7;
+      font-weight: 700;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 18px 20px 30px;
+    }
+
+    .content {
+      width: min(100%, 1180px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .content::after {
+      content: "";
+      position: absolute;
+      inset: 3% 3% 0 auto;
+      width: min(52vw, 720px);
+      aspect-ratio: 1 / 1;
+      background: url("logo.png") center/contain no-repeat;
+      opacity: 0.12;
+      filter: saturate(0.9);
+      pointer-events: none;
+    }
+
+    .login-wrap {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 500px);
+      text-align: center;
+    }
+
+    .title {
+      margin: 0 0 12px;
+      font-size: clamp(1.45rem, 2.1vw, 2.1rem);
+      font-weight: 800;
+      color: #4d3c07;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .card {
+      text-align: left;
+      background: linear-gradient(180deg, rgba(87, 69, 15, 0.88), rgba(48, 37, 8, 0.86));
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 18px 20px 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(7px);
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .card-note {
+      margin: 8px 0 0;
+      font-size: 0.82rem;
+      color: rgba(255, 248, 240, 0.75);
+    }
+
+    .divider {
+      height: 1px;
+      margin: 10px 0 12px;
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.96rem;
+      color: var(--muted);
+    }
+
+    .control,
+    select,
+    input {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 0;
+      padding: 0 12px;
+      font-size: 0.95rem;
+      color: var(--input-text);
+      background: #ffffff;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    }
+
+    .control:focus,
+    select:focus,
+    input:focus {
+      box-shadow:
+        inset 0 0 0 2px rgba(143, 117, 24, 0.58),
+        0 0 0 4px rgba(200, 173, 79, 0.18);
+    }
+
+    .password-row {
+      position: relative;
+    }
+
+    .password-row input {
+      padding-right: 54px;
+    }
+
+    .toggle-pass {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: #202020;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      min-width: 96px;
+      height: 38px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background: linear-gradient(180deg, #2ea44f, #18743a);
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(13, 74, 33, 0.28);
+      background: linear-gradient(180deg, #35b75a, #1d8d45);
+    }
+
+    .forgot {
+      display: inline-block;
+      margin-top: 10px;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 0.85rem;
+    }
+
+    .forgot a {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.success {
+      background: rgba(33, 143, 62, 0.22);
+      border: 1px solid rgba(111, 217, 139, 0.6);
+      color: #98ffb0;
+    }
+
+    .message.error {
+      background: rgba(170, 28, 28, 0.22);
+      border: 1px solid rgba(255, 140, 140, 0.6);
+      color: #ffb1b1;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 10px 18px 22px;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.86rem;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 820px) {
+      .topbar {
+        min-height: auto;
+        padding: 12px 16px;
+      }
+
+      .brand-logo {
+        width: 112px;
+        height: 112px;
+      }
+
+      .brand-name {
+        letter-spacing: 0.05em;
+      }
+
+      .card {
+        padding: 16px 14px 18px;
+      }
+
+      .title {
+        font-size: 1.3rem;
+      }
+
+      .content::after {
+        width: 95vw;
+        right: 50%;
+        transform: translateX(50%);
+        top: 8%;
+        opacity: 0.09;
+      }
+    }
+
+    @media (max-width: 560px) {
+      label {
+        font-size: 1rem;
+      }
+
+      .control,
+      select,
+      input {
+        height: 46px;
+        font-size: 1rem;
+      }
+
+      .actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .title {
+        margin-bottom: 14px;
+      }
+    }
+  </style>
+</head>
 <body>
-simple
+  <div class="page">
+    <header class="topbar">
+      <img class="brand-logo" src="logo.png" alt="RItman College Institute logo">
+      <div class="brand-copy">
+        <h1 class="brand-name">RCI</h1>
+        <p class="brand-subtitle">RITMAN COLLEGE INSTITUTE</p>
+      </div>
+    </header>
 
+    <main>
+      <section class="content">
+        <div class="login-wrap">
+          <h2 class="title">Students Access Module</h2>
 
+          <div class="card">
+            <h2>User Authentication</h2>
+            <div class="divider"></div>
 
+            <form id="loginForm">
+              <div class="field">
+                <label for="module">Module:</label>
+                <select id="module" class="control">
+                  <option value="">Select module</option>
+                  <option value="Students">Students</option>
+                  <option value="Faculty">Faculty</option>
+                  <option value="Staff">Staff</option>
+                </select>
+              </div>
 
+              <div class="field">
+                <label for="username">Username:</label>
+                <input id="username" type="text" placeholder="Enter username">
+              </div>
 
+              <div class="field">
+                <label for="birthdate">Birthdate:</label>
+                <input id="birthdate" type="text" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric">
+              </div>
 
+              <div class="field">
+                <label for="password">Password:</label>
+                <div class="password-row">
+                  <input id="password" type="password" placeholder="Enter password">
+                  <button class="toggle-pass" type="button" aria-label="Show password">Show</button>
+                </div>
+              </div>
 
+              <div class="actions">
+                <button class="btn" id="clearButton" type="reset">Clear / Cancel</button>
+                <button class="btn" type="submit">Login</button>
+              </div>
 
+              <div id="message" class="message" aria-live="polite"></div>
+            </form>
+
+            <p class="card-note">Demo credentials: username <strong>user01</strong>, password <strong>abc123</strong></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Created by Christian V. Tuazon
+    </footer>
+  </div>
+
+  <script>
+    const loginForm = document.querySelector("#loginForm");
+    const moduleInput = document.querySelector("#module");
+    const usernameInput = document.querySelector("#username");
+    const birthdateInput = document.querySelector("#birthdate");
+    const toggleButton = document.querySelector(".toggle-pass");
+    const passwordInput = document.querySelector("#password");
+    const clearButton = document.querySelector("#clearButton");
+    const messageBox = document.querySelector("#message");
+
+    function showMessage(type, text) {
+      messageBox.className = `message show ${type}`;
+      messageBox.textContent = text;
+    }
+
+    function clearMessage() {
+      messageBox.className = "message";
+      messageBox.textContent = "";
+    }
+
+    function formatBirthdate(value) {
+      const digits = value.replace(/\D/g, "").slice(0, 8);
+      let formatted = digits.slice(0, 2);
+
+      if (digits.length > 2) {
+        formatted += "/" + digits.slice(2, 4);
+      }
+
+      if (digits.length > 4) {
+        formatted += "/" + digits.slice(4, 8);
+      }
+
+      return formatted;
+    }
+
+    toggleButton.addEventListener("click", () => {
+      const isHidden = passwordInput.type === "password";
+      passwordInput.type = isHidden ? "text" : "password";
+      toggleButton.textContent = isHidden ? "Hide" : "Show";
+      toggleButton.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+    });
+
+    birthdateInput.addEventListener("input", () => {
+      birthdateInput.value = formatBirthdate(birthdateInput.value);
+    });
+
+    loginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const username = usernameInput.value.trim();
+      const module = moduleInput.value.trim();
+      const birthdate = birthdateInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!module || !username || !birthdate || !password) {
+        showMessage("error", "Please fill up module, username, birthdate, and password.");
+        return;
+      }
+
+      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(birthdate)) {
+        showMessage("error", "Birthdate must be in MM/DD/YYYY format.");
+        return;
+      }
+
+      if (username === "user01" && password === "abc123") {
+        localStorage.setItem("rciStudentLogin", JSON.stringify({
+          module,
+          username,
+          birthdate,
+          fullName: "TUAZON, CHRISTIAN VILLARUZ"
+        }));
+
+        showMessage("success", `Login successful. Welcome, student from ${module}! Redirecting...`);
+        setTimeout(() => {
+          window.location.href = "mainUI.html";
+        }, 900);
+        return;
+      }
+
+      showMessage("error", "Invalid username or password.");
+    });
+
+    clearButton.addEventListener("click", () => {
+      clearMessage();
+      passwordInput.type = "password";
+      toggleButton.textContent = "Show";
+      toggleButton.setAttribute("aria-label", "Show password");
+    });
+  </script>
 </body>
-
-
 </html>
